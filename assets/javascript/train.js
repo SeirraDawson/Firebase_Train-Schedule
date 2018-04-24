@@ -6,56 +6,100 @@ var config = {
     projectId: "fir-hw-c4e45",
     storageBucket: "fir-hw-c4e45.appspot.com",
     messagingSenderId: "534712906939"
-  };
-  firebase.initializeApp(config);
+};
+firebase.initializeApp(config);
 
 // variable that references the database
 var database = firebase.database();
 
-// Declaring initial variables
-var trainName = "";
-var destination = "";
-var trainTime = 0;
-var frequency = 0;
 
 
 // eventListener --> on click "#submitButton"
+// Get input data from the form
 $('#submitButton').on('click', function(){
     // prevent the submit button from submitting the form
     // Don't refresh the page!
     event.preventDefault();
-    // logic for storing and retrieving the recent data
-    trainName = $('#trainName').val().trim();
-    destination = $('#destination').val().trim();
-    trainTime = $('#trainTime').val().trim();
-    frequency = $('#frequency').val().trim();
-    // Code for the push
-    database.ref().push({
-        trainName: trainName,
-        destination: destination,
-        trainTime: trainTime,
-        frequency: frequency,
-        // add key value --> Timestamp
-        dateAdded: firebase.database.ServerValue.TIMESTAMP
+    //retrieving inputs from HTML
+    var trainName = $('#trainNameIndex').val().trim();
+    console.log("Train name is: " + trainName);
+    var trainDestination = $('#destinationIndex').val().trim();
+    console.log("Train destination is: " + trainDestination);
+    // Moment.js HH:mm -> convert to unix
+    var firstTrain = moment($('#firstTrainIndex').val().trim(), "HH:mm").format("X");
+    console.log("First's train time is: " + firstTrain);
+    var trainFrequency = $('#frequencyIndex').val().trim();
+    console.log("Train frequency is: " + trainFrequency);
+
+    // local "temporary" object for holding new train information
+    var newTrain = {
+        train: trainName,
+        trainDest: trainDestination,
+        trainArriving: firstTrain,
+        trainFreq: trainFrequency
+    };
+
+    // loads newTrain data to firebase
+    database.ref().push(newTrain);
+        //.push -> adds to information already in firebase
+        // .set -> overwrites pre-existing info
+
+        console.log("Temp object " + newTrain.train);
+        console.log("Temp object " + newTrain.trainDest);
+        console.log("Temp object " + newTrain.trainArriving);
+        console.log("Temp object " + newTrain.trainFreq);
+
+        //clears text boxes
+        $("trainNameIndex").val("");
+        $("destinationIndex").val("");
+        $("firstTrainIndex").val("");
+        $("frequencyIndex").val("");
+
+        // Stops executing of function and make this function return value passed
+            // (false in this case). This function is "submit" event callback.
+            // If this callback returns false, the form will not be submitted actually.
+        return false;
     });
-});
 
-// Firebase watcher + initial loader --> .on('value')
-database.ref().on('value', function(snapshot) {
-    // console.log everything from snapshot
-    console.log(snapshot.val().trainName);
-    console.log(snapshot.val().destination);
-    console.log(snapshot.val().trainTime);
-    console.log(snapshot.val().frequency);
+    // The function runs when a new train is added
+    database.ref().on('child_added', function(childSnapshot, prevChildKey) {
+        // console.log everything from childSnapshot
+        console.log("New train " + childSnapshot.val());
+        //store everything in the firebase
+        var trainName = childSnapshot.val().train;
+        var trainDestination = childSnapshot.val().trainDest;
+        var firstTrain = childSnapshot.val().trainArriving;
+        var trainFrequency = childSnapshot.val().trainFreq;
+
+        //Train information
+        console.log("Added train name: " + trainName);
+        console.log("Added destination: " +trainDestination);
+        /////////   NOT console.log correctly ////////////
+        console.log("Added first train: " +firstTrain);
+        console.log("Added frequency: " +trainFrequency);
+
+        // moment.js current time in international time
+        var currentTime = moment();
+        console.log("Current time is: " + moment(currentTime).format("HH:mm"));
+        // first train time neater
+        var trainTime = moment.unix(firstTrain).format("hh:mm");
+        console.log("trainTime = " + trainTime);
+        // difference between the times
+        var differTime = moment().diff(moment(trainTime),"minutes");
+        console.log("Difference between the times = " + differTime);
+        // next train
+
+        // minutes away
 
 
-    // Handle errors
-},  function(errorObject){
-        console.log("Errors handled: " + errorObject.code);
-});    
-
-    //Change the HTML
-    $('trainName').text(snapshot.val().trainName);
-    $('destination').text(snapshot.val().destination);
-    $('trainTime').text(snapshot.val().trainTime);
-    $('frequency').text(snapshot.val().frequency);
+        //display each train information in the HTML table
+        $("#trainTable").append(
+            "<tr>" +
+            "<td>" + trainName + "</td>"+
+            "<td>" + trainDestination + "</td>" +
+            "<td>" + trainFrequency + "</td>" +
+            "<td>" + nextArrival + "</td>" +
+            "<td>" + minAway + "</td>" +
+            "</tr>"
+        );
+    });

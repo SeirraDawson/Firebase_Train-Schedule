@@ -38,7 +38,7 @@
                         <h2 class="panel-title">Current Train Schedule</h2>
                     </div>
                     <div class="panel-body">
-                        <table class="table table-striped">
+                        <table class="table table-striped" id="trainTable">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
@@ -79,23 +79,23 @@
 
                             <div class="form-group">
                                 <!-- Train Name input -->
-                                <label for="trainName">Train Name</label>
-                                <input type="text" class="form-control" id="trainName"/>
+                                <label for="trainNameIndex">Train Name</label>
+                                <input type="text" class="form-control" id="trainNameIndex" placeholder="">
                             </div>
                             <!-- Destination input -->
                             <div class="form-group">
-                                <label for="destination">Destination</label>
-                                <input type="text" class="form-control" id="destination"/>
+                                <label for="destinationIndex">Destination</label>
+                                <input type="text" class="form-control" id="destinationIndex" placeholder="">
                             </div>
                             <!--First Train Time hh:mm - 24 hour clock -->
                             <div class="form-group">
-                                <label for="trainTime">First Train Time (hh:mm - military time) </label>
-                                <input type="time"  class="form-control" id="trainTime"/>
+                                <label for="firstTrainIndex">First Train Time (hh:mm - international time) </label>
+                                <input type="text"  class="form-control" id="firstTrainIndex" placeholder="">
                             </div>
                             <!-- Frequency(min) -->
                             <div class="form-group">
-                                <label for="frequency">Frequency (min)</label>
-                                <input type="number" class="form-control" id="frequency"/>
+                                <label for="frequencyIndex">Frequency (min)</label>
+                                <input type="number" class="form-control" id="frequencyIndex" placeholder="">
                             </div>
                             <!-- Sumbit button -->
                             <div class="form-group">
@@ -107,8 +107,12 @@
             </div>
         </div>
     </div>
+
     <!-- JQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Link to Moment.js should go here -->
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
 
     <!-- Firebase JavaScript Link -->
     <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>

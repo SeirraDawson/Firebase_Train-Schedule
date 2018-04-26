@@ -12,8 +12,6 @@ firebase.initializeApp(config);
 // variable that references the database
 var database = firebase.database();
 
-
-
 // eventListener --> on click "#submitButton"
 // Get input data from the form
 $('#submitButton').on('click', function(){
@@ -25,8 +23,8 @@ $('#submitButton').on('click', function(){
     console.log("Train name is: " + trainName);
     var trainDestination = $('#destinationIndex').val().trim();
     console.log("Train destination is: " + trainDestination);
-    // Moment.js HH:mm -> convert to unix
-    var firstTrain = moment($('#firstTrainIndex').val().trim(), "HH:mm").format("X");
+    // Moment.js HH:mm -> //////ISSUE///////
+    var firstTrain = moment($('#firstTrainIndex').val().trim(), "HH:mm").format("HH:mm");
     console.log("First's train time is: " + firstTrain);
     var trainFrequency = $('#frequencyIndex').val().trim();
     console.log("Train frequency is: " + trainFrequency);
@@ -79,18 +77,21 @@ $('#submitButton').on('click', function(){
         console.log("Added frequency: " +trainFrequency);
 
         // moment.js current time in international time
-        var currentTime = moment();
-        console.log("Current time is: " + moment(currentTime).format("HH:mm"));
+        var timeRightNow = moment();
+        console.log("Current time is: " + moment(timeRightNow).format("HH:mm"));
         // first train time neater
-        var trainTime = moment.unix(firstTrain).format("hh:mm");
-        console.log("trainTime = " + trainTime);
+        var trainTime = moment(firstTrain, "HH:mm").format("hh:mm");
+        console.log("trainTime: " + trainTime);
         // difference between the times
-        var differTime = moment().diff(moment(trainTime),"minutes");
-        console.log("Difference between the times = " + differTime);
+        var differTime = timeRightNow.diff(moment(trainTime, "hh:mm"),"minutes");
+        console.log("Difference between the time: " + differTime);
         // next train
+        var nextTrain = moment(trainTime, "hh:mm").add(trainFrequency, "minutes").format("hh:mm");
+        console.log("The next train: " + nextTrain);
 
         // minutes away
-
+        var minutesAway =  moment(nextTrain,"hh:mm").diff(moment("HH:mm").format("minutes"));
+        console.log("Minutes away: " + minutesAway);
 
         //display each train information in the HTML table
         $("#trainTable").append(
@@ -98,8 +99,9 @@ $('#submitButton').on('click', function(){
             "<td>" + trainName + "</td>"+
             "<td>" + trainDestination + "</td>" +
             "<td>" + trainFrequency + "</td>" +
-            "<td>" + nextArrival + "</td>" +
-            "<td>" + minAway + "</td>" +
+            "<td>" + nextTrain + "</td>" +
+            "<td>" + minutesAway + "</td>" +
             "</tr>"
         );
+
     });

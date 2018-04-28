@@ -85,13 +85,13 @@ $('#submitButton').on('click', function(){
         // difference between the times
         var differTime = timeRightNow.diff(moment(trainTime, "hh:mm"),"minutes");
         console.log("Difference between the time: " + differTime);
-        // next train
-        var nextTrain = moment(trainTime, "hh:mm").add(trainFrequency, "minutes").format("hh:mm");
-        console.log("The next train: " + nextTrain);
-
+        var remainder = differTime % trainFrequency;
         // minutes away
-        var minutesAway =  moment(nextTrain,"hh:mm").diff(moment("HH:mm").format("minutes"));
+        var minutesAway =  trainFrequency - remainder;
         console.log("Minutes away: " + minutesAway);
+        // next train
+        var nextTrain = moment().add(minutesAway, "minutes").format("hh:mm");
+        console.log("The next train: " + nextTrain);
 
         //display each train information in the HTML table
         $("#trainTable").append(
